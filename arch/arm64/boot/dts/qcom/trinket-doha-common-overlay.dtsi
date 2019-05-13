@@ -67,6 +67,7 @@
 
 &key_vol_up_default {
 	pins = "gpio9";
+	power-source = <1>;
 };
 
 &soc {
