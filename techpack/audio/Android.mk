@@ -24,6 +24,10 @@ include $(MY_LOCAL_PATH)/asoc/codecs/Android.mk
 include $(MY_LOCAL_PATH)/asoc/codecs/wcd934x/Android.mk
 endif
 
+ifeq ($(AUDIO_FEATURE_ENABLED_CIRRUS_PLAYBACK),true)
+	KERNEL_CFLAGS += CONFIG_CIRRUS_PLAYBACK=y
+endif
+
 ifeq ($(call is-board-platform-in-list, atoll),true)
 UAPI_OUT := $(PRODUCT_OUT)/obj/vendor/qcom/opensource/audio-kernel/4.0/include
 
