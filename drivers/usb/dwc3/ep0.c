@@ -63,6 +63,12 @@ static void dwc3_ep0_prepare_one_trb(struct dwc3_ep *dep,
 	trb->size = len;
 	trb->ctrl = type;
 
+	/*
+	 * Ensure that updates of buffer address and size happens
+	 * before we set the DWC3_TRB_CTRL_HWO so that core
+	 * does not process any stale TRB.
+	 */
+	mb();
 	trb->ctrl |= (DWC3_TRB_CTRL_HWO
 			| DWC3_TRB_CTRL_ISP_IMI);
 
@@ -111,7 +117,7 @@ static int __dwc3_gadget_ep0_queue(struct dwc3_ep *dep,
 	req->epnum		= dep->number;
 
 	list_add_tail(&req->list, &dep->pending_list);
-
+	dbg_ep_queue(dep->number, req);
 	/*
 	 * Gadget driver might not be quick enough to queue a request
 	 * before we get a Transfer Not Ready event on this endpoint.
@@ -268,6 +274,7 @@ void dwc3_ep0_stall_and_restart(struct dwc3 *dwc)
 		struct dwc3_request	*req;
 
 		req = next_request(&dep->pending_list);
+		dbg_ep_unmap(dep->number, req);
 		if (!dwc->connected)
 			dwc3_gadget_giveback(dep, req, -ESHUTDOWN);
 		else
@@ -1049,6 +1056,7 @@ static void dwc3_ep0_complete_data(struct dwc3 *dwc,
 		dbg_event(epnum, "INDATSTAL", 0);
 		dwc3_ep0_stall_and_restart(dwc);
 	} else {
+		dbg_ep_unmap(ep0->number, r);
 		dwc3_gadget_giveback(ep0, r, 0);
 	}
 }
@@ -1068,7 +1076,7 @@ static void dwc3_ep0_complete_status(struct dwc3 *dwc,
 
 	if (!list_empty(&dep->pending_list)) {
 		r = next_request(&dep->pending_list);
-
+		dbg_ep_unmap(dep->number, r);
 		dwc3_gadget_giveback(dep, r, 0);
 	}
 
@@ -1145,6 +1153,7 @@ static void __dwc3_ep0_do_control_data(struct dwc3 *dwc,
 		if (ret)
 			return;
 
+		dbg_ep_map(dep->number, req);
 		maxpacket = dep->endpoint.maxpacket;
 		rem = req->request.length % maxpacket;
 		dwc->ep0_bounced = true;
@@ -1173,6 +1182,7 @@ static void __dwc3_ep0_do_control_data(struct dwc3 *dwc,
 		if (ret)
 			return;
 
+		dbg_ep_map(dep->number, req);
 		maxpacket = dep->endpoint.maxpacket;
 		rem = req->request.length % maxpacket;
 
@@ -1198,6 +1208,7 @@ static void __dwc3_ep0_do_control_data(struct dwc3 *dwc,
 		if (ret)
 			return;
 
+		dbg_ep_map(dep->number, req);
 		dwc3_ep0_prepare_one_trb(dep, req->request.dma,
 				req->request.length, DWC3_TRBCTL_CONTROL_DATA,
 				false);
