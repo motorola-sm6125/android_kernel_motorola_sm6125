@@ -1324,12 +1324,13 @@ static int usb_icl_vote_callback(struct votable *votable, void *data,
 	}
 
 	/* rerun AICL if new ICL is above settled ICL */
-	if (icl_ua > pval.intval)
+	if (icl_ua != INT_MAX && icl_ua > pval.intval)
 		rerun_aicl = true;
 
 	if (rerun_aicl && (chip->wa_flags & AICL_RERUN_WA_BIT)) {
 		/* set a lower ICL */
 		pval.intval = max(pval.intval - ICL_STEP_UA, ICL_STEP_UA);
+		pr_debug("****initial step icl setting %d\n", pval.intval);
 		power_supply_set_property(chip->main_psy,
 				POWER_SUPPLY_PROP_CURRENT_MAX,
 				&pval);
@@ -1337,6 +1338,7 @@ static int usb_icl_vote_callback(struct votable *votable, void *data,
 
 	/* set the effective ICL */
 	pval.intval = icl_ua;
+	pr_debug("****final icl setting %d\n", pval.intval);
 	power_supply_set_property(chip->main_psy,
 			POWER_SUPPLY_PROP_CURRENT_MAX,
 			&pval);
@@ -1977,6 +1979,11 @@ int qcom_batt_init(struct charger_param *chg_param)
 	if (!chip->pl_ws)
 		goto cleanup;
 
+	INIT_DELAYED_WORK(&chip->status_change_work, status_change_work);
+	INIT_WORK(&chip->pl_taper_work, pl_taper_work);
+	INIT_WORK(&chip->pl_disable_forever_work, pl_disable_forever_work);
+	INIT_DELAYED_WORK(&chip->fcc_stepper_work, fcc_stepper_work);
+
 	chip->fcc_main_votable = create_votable("FCC_MAIN", VOTE_MIN,
 					pl_fcc_main_vote_callback,
 					chip);
@@ -2045,11 +2052,6 @@ int qcom_batt_init(struct charger_param *chg_param)
 	}
 
 	vote(chip->pl_disable_votable, PL_INDIRECT_VOTER, true, 0);
-
-	INIT_DELAYED_WORK(&chip->status_change_work, status_change_work);
-	INIT_WORK(&chip->pl_taper_work, pl_taper_work);
-	INIT_WORK(&chip->pl_disable_forever_work, pl_disable_forever_work);
-	INIT_DELAYED_WORK(&chip->fcc_stepper_work, fcc_stepper_work);
 
 	rc = pl_register_notifier(chip);
 	if (rc < 0) {
