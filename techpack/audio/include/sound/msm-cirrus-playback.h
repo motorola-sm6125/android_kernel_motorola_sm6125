@@ -102,8 +102,6 @@ extern int afe_set_crus_params(u16 port_id, struct param_hdr_v3 param_hdr,
 				u8 *param_data);
 extern int afe_get_crus_params(u16 port_id, struct mem_mapping_hdr *mem_hdr,
 				struct param_hdr_v3 *param_hdr);
-extern int crus_afe_set_callback(
-	int32_t (*crus_afe_callback_func)(void *payload, int size));
 void msm_crus_pb_add_controls(struct snd_soc_platform *platform);
 
 #endif /* _MSM_CIRRUS_PLAYBACK_H */

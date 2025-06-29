@@ -76,8 +76,6 @@ static int crus_get_param(int port, int module, int param, int length,
 		return -ENOMEM;
 	}
 
-	crus_afe_set_callback(crus_afe_callback);
-
 	ret = afe_get_crus_params(port, NULL, &param_hdr);
 
 	if (ret)

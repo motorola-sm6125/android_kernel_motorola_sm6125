@@ -186,15 +186,7 @@ static unsigned long afe_configured_cmd;
 static struct afe_ctl this_afe;
 
 #ifdef CONFIG_CIRRUS_PLAYBACK
-int32_t (*crus_afe_callback)(void *payload, int size);
-
-extern int crus_afe_set_callback(
-	int32_t (*crus_afe_callback_func)(void *payload, int size))
-{
-	crus_afe_callback = crus_afe_callback_func;
-	return 0;
-}
-EXPORT_SYMBOL(crus_afe_set_callback);
+extern int32_t crus_afe_callback(void *payload, int size);
 #endif
 
 #define TIMEOUT_MS 1000
