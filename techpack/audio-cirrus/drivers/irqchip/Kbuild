@@ -4,8 +4,8 @@ EXTRA_CFLAGS += -I$(CIRRUS_TOP)/include
 
 cirrus_irq-madera-objs = irq-madera.o
 
-obj-m += cirrus_irq-madera.o
+obj-y += cirrus_irq-madera.o
 
 cirrus_irq-tacna-objs = irq-tacna.o
 
-obj-m += cirrus_irq-tacna.o
+obj-y += cirrus_irq-tacna.o

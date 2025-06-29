@@ -2,6 +2,6 @@
 EXTRA_CFLAGS += -Wall
 EXTRA_CFLAGS += -I$(CIRRUS_TOP)/include
 
-obj-m += gpio-madera.o
+obj-y += gpio-madera.o
 
-obj-m += gpio-tacna.o
+obj-y += gpio-tacna.o
