@@ -1,3 +1,5 @@
+CIRRUS_TOP := $(srctree)/techpack/audio-cirrus
+
 obj-y += \
 	drivers/extcon \
 	drivers/gpio \
