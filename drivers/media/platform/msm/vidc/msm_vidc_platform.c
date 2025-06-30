@@ -475,7 +475,7 @@ static struct msm_vidc_common_data sm8150_common_data[] = {
 	},
 	{
 		.key = "qcom,decode-batching",
-		.value = 1,
+		.value = 0,
 	},
 	{
 		.key = "qcom,dcvs",
@@ -546,7 +546,7 @@ static struct msm_vidc_common_data sdmmagpie_common_data_v0[] = {
 	},
 	{
 		.key = "qcom,decode-batching",
-		.value = 1,
+		.value = 0,
 	},
 	{
 		.key = "qcom,dcvs",
@@ -617,7 +617,7 @@ static struct msm_vidc_common_data sdmmagpie_common_data_v1[] = {
 	},
 	{
 		.key = "qcom,decode-batching",
-		.value = 1,
+		.value = 0,
 	},
 	{
 		.key = "qcom,dcvs",
@@ -926,6 +926,8 @@ static struct msm_vidc_platform_data sdmshrike_data = {
 	.csc_data.vpe_csc_custom_limit_coeff = vpe_csc_custom_limit_coeff,
 	.efuse_data = NULL,
 	.efuse_data_length = 0,
+	.heic_image_capability = &default_heic_image_capability,
+	.hevc_image_capability = &default_hevc_image_capability,
 	.sku_version = 0,
 	.vpu_ver = VPU_VERSION_5,
 };
